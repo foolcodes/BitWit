@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* colors: {
+ 'text': '#e5eff5',
+ 'background': '#03080c',
+ 'primary': '#89c9ec',
+ 'secondary': '#0c6da1',
+ 'accent': '#05a8ff',
+},
+ */
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 211, 238, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(34, 211, 238, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 211, 238, 0);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
