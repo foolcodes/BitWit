@@ -14,19 +14,23 @@ import {
   ChevronRight,
   Trophy,
   Building,
-  Brain,
-  UserPlus,
-  Briefcase,
   Zap,
   Bell,
   ExternalLink,
-  ArrowRight,
   Play,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { neetcode150 } from "./stores/neetcodeProblemsList";
+import {
+  striversAtoZSheet,
+  striversSdeSheet,
+  strivers79Sheet,
+  striversBlind75,
+  tleSheet,
+} from "./stores/striversProblemsList";
 
 const Home = () => {
   const threeJsRef = useRef(null);
@@ -273,7 +277,11 @@ const Home = () => {
     };
 
     animate();
-  });
+  }, []);
+
+  useEffect(() => {
+    tleSheet();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white overflow-hidden">
@@ -313,12 +321,11 @@ const Home = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed font-light"
+            className="text-xl md:text-2xl font-medium text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed font-light"
           >
-            Your unified platform for competitive programming success across all
-            major coding platforms with{" "}
-            <span className="text-cyan-400 font-normal">
-              AI-powered insights
+            Your unified platform for competitive programming success across all{" "}
+            <span className="text-cyan-400 font-bold">
+              major coding platforms
             </span>
           </motion.p>
 
