@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { motion } from "framer-motion";
 
+import LampEffect from "./components/ui/LampEffect/LampEffect";
+
 import {
   Calendar,
   Code,
@@ -284,7 +286,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white overflow-hidden">
+    <div className="min-h-screen bg-gray-950 text-white overflow-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#080510,#1e1b4b,#080510)] opacity-40 bg-[length:300%_100%] animate-gradient-x -z-10"></div>
 
       {/* Background Space Animation */}
@@ -312,7 +314,7 @@ const Home = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="bg-clip-text animate-gradient text-6xl md:text-7xl lg:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#89c9ec] via-[#05a8ff] to-[#0c6da1] tracking-tight"
+            className="animate-gradient text-6xl md:text-7xl lg:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#89c9ec] via-[#05a8ff] to-[#0c6da1] tracking-tight"
           >
             BitWit
           </motion.h1>
@@ -321,7 +323,7 @@ const Home = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            className="text-xl md:text-2xl font-medium text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed font-light"
+            className="text-xl md:text-2xl font-medium text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed"
           >
             Your unified platform for competitive programming success across all{" "}
             <span className="text-cyan-400 font-bold">
@@ -439,116 +441,111 @@ const Home = () => {
 
       <div className="max-w-6xl mx-auto px-4 py-16">
         {/* Features Sectio */}
-        <motion.div
-          ref={featuresRef}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          className="mb-24"
-        >
-          <div className="text-center mb-16">
-            <motion.span
-              initial={{ opacity: 0, y: -10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6 }}
-              className="inline-block px-5 py-2 rounded-full text-sm font-semibold bg-indigo-900/30 text-indigo-200 border border-indigo-700/20 mb-5 backdrop-blur-sm"
+
+        <LampEffect>
+          <div className="relative mt-5 z-10">
+            <motion.div
+              ref={featuresRef}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+              className="mb-24"
             >
-              <span className="mr-2 inline-block w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-              PLATFORM FEATURES
-            </motion.span>
-
-            <motion.h2
-              initial={{ opacity: 0, y: -15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-3xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-300"
-            >
-              Why Choose BitWit?
-            </motion.h2>
-
-            <motion.p
-              initial={{ opacity: 0, y: -10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-gray-400 max-w-2xl mx-auto text-lg"
-            >
-              Your complete toolkit for mastering competitive programming with
-              all the POTD and contests at a unified space
-            </motion.p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                icon: <Code className="h-8 w-8 text-cyan-400" />,
-                title: "Unified Dashboard",
-                description:
-                  "Access problems from LeetCode, Codeforces, HackerRank and more - all in one seamless interface",
-              },
-
-              {
-                icon: <TrendingUp className="h-8 w-8 text-purple-400" />,
-                title: "Smart Analytics",
-                description:
-                  "Track your progress with detailed insights and performance metrics tailored to your goals",
-              },
-              {
-                icon: <PieChart className="h-8 w-8 text-rose-400" />,
-                title: "Skill Assessment",
-                description: "Identify strengths and weaknesses with precision",
-              },
-              {
-                icon: <Calendar className="h-8 w-8 text-amber-400" />,
-                title: "Contest Tracker",
-                description:
-                  "Stay ahead with contest recommendations and scheduling based on your skill level",
-              },
-              {
-                icon: <Award className="h-8 w-8 text-emerald-400" />,
-                title: "Learning Paths",
-                description:
-                  "Follow curated problem sets designed by competitive programming champions",
-              },
-
-              {
-                icon: <Zap className="h-8 w-8 text-yellow-400" />,
-                title: "Speed Challenges",
-                description:
-                  "Improve your coding velocity by saving your time and energy navigating site by site and use it elsewhere",
-              },
-            ].map((feature, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ margin: "-50px" }}
-                whileHover={{
-                  scale: 1.02,
-                }}
-                className="feature-card bg-gray-800/20 backdrop-blur-md p-8 rounded-xl border border-gray-700/40 transition-all duration-300 group hover:border-indigo-500/30 hover:bg-gray-800/40 hover:shadow-[0_12px_40px_-10px_rgba(99,102,241,0.4)]"
-              >
-                <motion.div
-                  initial={{ scale: 0.8 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  whileHover={{ scale: 1.02 }}
-                  className="mb-5 bg-gray-800/40 w-16 h-16 rounded-lg border border-gray-700/40 flex items-center justify-center group-hover:border-indigo-500/30 group-hover:bg-indigo-900/20 transition-all duration-300"
+              <div className="text-center mb-16">
+                <motion.h2
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                  className="text 3xl md:text-5xl font-bold mb-7 bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-100 to-gray-300"
                 >
-                  {feature.icon}
-                </motion.div>
-                <h3 className="text-xl font-semibold mb-3 group-hover:text-cyan-300 transition-colors duration-300">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-400 leading-relaxed">
-                  {feature.description}
-                </p>
-              </motion.div>
-            ))}
+                  Why Choose BitWit?
+                </motion.h2>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="text-gray-400 max-w-2xl mx-auto text-lg"
+                >
+                  Your complete toolkit for mastering competitive programming
+                  with all the POTD and contests at a unified space
+                </motion.p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[
+                  {
+                    icon: <Code className="h-8 w-8 text-cyan-400" />,
+                    title: "Unified Dashboard",
+                    description:
+                      "Access problems from LeetCode, Codeforces, HackerRank and more - all in one seamless interface",
+                  },
+
+                  {
+                    icon: <TrendingUp className="h-8 w-8 text-purple-400" />,
+                    title: "Smart Analytics",
+                    description:
+                      "Track your progress with detailed insights and performance metrics tailored to your goals",
+                  },
+                  {
+                    icon: <PieChart className="h-8 w-8 text-rose-400" />,
+                    title: "Skill Assessment",
+                    description:
+                      "Identify strengths and weaknesses with precision",
+                  },
+                  {
+                    icon: <Calendar className="h-8 w-8 text-amber-400" />,
+                    title: "Contest Tracker",
+                    description:
+                      "Stay ahead with contest recommendations and scheduling based on your skill level",
+                  },
+                  {
+                    icon: <Award className="h-8 w-8 text-emerald-400" />,
+                    title: "Learning Paths",
+                    description:
+                      "Follow curated problem sets designed by competitive programming champions",
+                  },
+
+                  {
+                    icon: <Zap className="h-8 w-8 text-yellow-400" />,
+                    title: "Speed Challenges",
+                    description:
+                      "Improve your coding velocity by saving your time and energy navigating site by site and use it elsewhere",
+                  },
+                ].map((feature, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ margin: "-50px" }}
+                    whileHover={{
+                      scale: 1.02,
+                    }}
+                    className="feature-card bg-gray-800/20 backdrop-blur-md p-8 rounded-xl border border-gray-700/40 transition-all duration-300 group hover:border-indigo-500/30 hover:bg-gray-800/40 hover:shadow-[0_12px_40px_-10px_rgba(99,102,241,0.4)]"
+                  >
+                    <motion.div
+                      initial={{ scale: 0.8 }}
+                      whileInView={{ scale: 1 }}
+                      viewport={{ once: true }}
+                      whileHover={{ scale: 1.02 }}
+                      className="mb-5 bg-gray-800/40 w-16 h-16 rounded-lg border border-gray-700/40 flex items-center justify-center group-hover:border-indigo-500/30 group-hover:bg-indigo-900/20 transition-all duration-300"
+                    >
+                      {feature.icon}
+                    </motion.div>
+                    <h3 className="text-xl font-semibold mb-3 group-hover:text-cyan-300 transition-colors duration-300">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-400 leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
+        </LampEffect>
 
         {/* Upcoming Contests Section */}
         <motion.div
