@@ -64,4 +64,25 @@ app.get("/api/tle-sheet", async (req, res) => {
   }
 });
 
+app.get("/api/gfg-contest", async (req, res) => {
+  try {
+    const { page_number = 1, sub_type = "all", type = "contest" } = req.query;
+
+    const response = await axios.get(
+      "https://practiceapi.geeksforgeeks.org/api/vr/events/",
+      {
+        params: { page_number, sub_type, type },
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+          Origin: "https://www.geeksforgeeks.org",
+        },
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching GFG contests:", error);
+    res.status(400).json({ error: "Error fetching GFG contests" });
+  }
+});
 app.listen(PORT, () => console.log("Server listening on port 5000"));
