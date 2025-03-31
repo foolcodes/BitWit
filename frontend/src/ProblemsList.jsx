@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Dices, ExternalLink, RefreshCcw, X } from "lucide-react";
 
-const ProblemsList = ({ problems }) => {
+const ProblemsList = ({ problems, toggleCheckBox }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [randomProblem, setRandomProblem] = useState(null);
+  const [showRandomProblem, setShowRandomProblem] = useState(false);
+  const problemsPerPage = 10;
 
   const filteredProblems = problems.filter((problem) => {
     const matchesSearch =
@@ -23,15 +28,37 @@ const ProblemsList = ({ problems }) => {
     );
   });
 
+  // Random problem picker
+  const pickRandomProblem = () => {
+    if (filteredProblems.length === 0) return;
+
+    const randomIndex = Math.floor(Math.random() * filteredProblems.length);
+    setRandomProblem(filteredProblems[randomIndex]);
+    setShowRandomProblem(true);
+  };
+
+  const closeRandomProblem = () => {
+    setShowRandomProblem(false);
+  };
+
   // Handle checkbox toggle
   const toggleCompletion = (id) => {
-    // In a real app, you would update your state management here
-    console.log(`Toggled completion for problem ${id}`);
+    toggleCheckBox(id);
   };
+
+  // Pagination
+  const totalPages = Math.ceil(filteredProblems.length / problemsPerPage);
+  const paginatedProblems = filteredProblems.slice(
+    (currentPage - 1) * problemsPerPage,
+    currentPage * problemsPerPage
+  );
+
+  const nextPage = () =>
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
 
   return (
     <div className="space-y-6">
-      {/* Search and filter controls */}
       <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
         <div className="relative flex-1">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -78,9 +105,142 @@ const ProblemsList = ({ problems }) => {
         </div>
       </div>
 
+      {/* Random problem picker button */}
+      <div className="flex justify-center">
+        <button
+          onClick={pickRandomProblem}
+          disabled={filteredProblems.length === 0}
+          className={`px-4 py-2 rounded-lg font-semibold text-white flex items-center ${
+            filteredProblems.length === 0
+              ? "bg-gray-700 cursor-not-allowed"
+              : "bg-[#05a8ff] hover:bg-[#0c6da1] transition-colors duration-200"
+          }`}
+        >
+          <span className="pr-3">
+            <Dices />
+          </span>
+          Pick Random Problem
+        </button>
+      </div>
+
+      {/* Random problem modal */}
+      {showRandomProblem && randomProblem && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-xl"
+          >
+            <div className="flex justify-between items-start mb-4">
+              <h2 className="text-xl font-bold text-white">Random Problem</h2>
+              <button
+                onClick={closeRandomProblem}
+                className="text-gray-400 hover:text-white"
+              >
+                <X />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <h3 className="text-lg font-semibold text-white">
+                  {randomProblem.title}
+                </h3>
+                <div
+                  className={`inline-flex px-2.5 py-0.5 text-xs rounded-full ${
+                    randomProblem.difficulty === "Easy"
+                      ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                      : randomProblem.difficulty === "Medium"
+                        ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30"
+                        : "bg-red-500/20 text-red-400 border border-red-500/30"
+                  }`}
+                >
+                  {randomProblem.difficulty}
+                </div>
+                <div className="inline-flex px-2.5 py-0.5 text-xs rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  {randomProblem.sheet}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-2 mb-4">
+                {randomProblem.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex px-2 py-0.5 text-xs rounded-md bg-gray-700/50 text-gray-300"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <div className="flex flex-col sm:flex-row sm:space-x-4 space-y-2 sm:space-y-0">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={randomProblem.completed}
+                    onChange={() => toggleCompletion(randomProblem.id)}
+                    className="h-5 w-5 text-blue-500 border-gray-600 rounded-md focus:ring-blue-500 focus:ring-opacity-25"
+                  />
+                  <span className="ml-2 text-gray-300">
+                    {randomProblem.completed ? "Completed" : "Not completed"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex space-x-4">
+              <a
+                href={randomProblem.youtubeLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex justify-center items-center px-4 py-2 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors duration-200"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 mr-2"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                </svg>
+                <span>Watch Solution</span>
+              </a>
+
+              <a
+                href={randomProblem.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex justify-center items-center px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/30 hover:bg-blue-500/30 transition-colors duration-200"
+              >
+                <span className="pr-2">
+                  <ExternalLink size={19} />
+                </span>
+                <span>Solve Problem</span>
+              </a>
+            </div>
+
+            <div className="mt-6 flex justify-center">
+              <button
+                onClick={pickRandomProblem}
+                className="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 transition-colors duration-200 flex items-center"
+              >
+                <span className="pr-2">
+                  <RefreshCcw size={17} />
+                </span>
+                Pick Another Random Problem
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
       {/* Problems list */}
       <div className="space-y-4">
-        {filteredProblems.length === 0 ? (
+        {paginatedProblems.length === 0 ? (
           <div className="text-center py-8">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -101,7 +261,7 @@ const ProblemsList = ({ problems }) => {
             </p>
           </div>
         ) : (
-          filteredProblems.map((problem, idx) => (
+          paginatedProblems.map((problem, idx) => (
             <motion.div
               key={problem.id}
               initial={{ opacity: 0, y: 10 }}
@@ -210,26 +370,35 @@ const ProblemsList = ({ problems }) => {
         )}
       </div>
 
-      {/* Pagination (simplified) */}
-      {filteredProblems.length > 0 && (
-        <div className="flex justify-center mt-8">
-          <nav className="flex items-center space-x-2">
-            <button className="px-3 py-1 rounded-md bg-gray-800 text-gray-400 hover:bg-gray-700">
-              Previous
-            </button>
-            <button className="px-3 py-1 rounded-md bg-blue-500 text-white">
-              1
-            </button>
-            <button className="px-3 py-1 rounded-md bg-gray-800 text-gray-400 hover:bg-gray-700">
-              2
-            </button>
-            <button className="px-3 py-1 rounded-md bg-gray-800 text-gray-400 hover:bg-gray-700">
-              3
-            </button>
-            <button className="px-3 py-1 rounded-md bg-gray-800 text-gray-400 hover:bg-gray-700">
-              Next
-            </button>
-          </nav>
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-6 space-x-4">
+          <button
+            onClick={prevPage}
+            disabled={currentPage === 1}
+            className={`px-4 py-2 rounded-lg text-white ${
+              currentPage === 1
+                ? "bg-gray-700 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
+          >
+            Previous
+          </button>
+
+          <span className="text-gray-300">
+            Page {currentPage} of {totalPages}
+          </span>
+
+          <button
+            onClick={nextPage}
+            disabled={currentPage === totalPages}
+            className={`px-4 py-2 rounded-lg text-white ${
+              currentPage === totalPages
+                ? "bg-gray-700 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
+            }`}
+          >
+            Next
+          </button>
         </div>
       )}
     </div>

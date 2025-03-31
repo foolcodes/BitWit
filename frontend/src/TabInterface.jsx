@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProblemsList from "./ProblemsList";
 import SheetsCard from "./SheetsCard";
+import { neetcode150 } from "./stores/neetcodeProblemsList";
+import { v4 as uuid } from "uuid";
 
 const TabsContainer = () => {
   const [activeTab, setActiveTab] = useState("sheets");
+  const [problems, setProblems] = useState([]);
 
   const sheets = [
     {
@@ -100,58 +103,82 @@ const TabsContainer = () => {
     },
   ];
 
-  const problems = [
-    {
-      id: "p1",
-      title: "Two Sum",
-      difficulty: "Easy",
-      tags: ["Array", "Hash Table"],
-      sheet: "Blind 75",
-      completed: true,
-      link: "https://leetcode.com/problems/two-sum/",
-      youtubeLink: "https://youtube.com/watch?v=KLlXCFG5TnA",
-    },
-    {
-      id: "p2",
-      title: "Valid Parentheses",
-      difficulty: "Easy",
-      tags: ["Stack", "String"],
+  // const problems = [
+  //   {
+  //     id: "p1",
+  //     title: "Two Sum",
+  //     difficulty: "Easy",
+  //     tags: ["Array", "Hash Table"],
+  //     sheet: "Blind 75",
+  //     completed: true,
+  //     link: "https://leetcode.com/problems/two-sum/",
+  //     youtubeLink: "https://youtube.com/watch?v=KLlXCFG5TnA",
+  //   },
+  //   {
+  //     id: "p2",
+  //     title: "Valid Parentheses",
+  //     difficulty: "Easy",
+  //     tags: ["Stack", "String"],
+  //     sheet: "Neetcode 150",
+  //     completed: false,
+  //     link: "https://leetcode.com/problems/valid-parentheses/",
+  //     youtubeLink: "https://youtube.com/watch?v=WTzjTskDFMg",
+  //   },
+  //   {
+  //     id: "p3",
+  //     title: "Merge K Sorted Lists",
+  //     difficulty: "Hard",
+  //     tags: ["Linked List", "Heap", "Divide and Conquer"],
+  //     sheet: "Strivers SDE",
+  //     completed: false,
+  //     link: "https://leetcode.com/problems/merge-k-sorted-lists/",
+  //     youtubeLink: "https://youtube.com/watch?v=q5a5OiGbT6Q",
+  //   },
+  //   {
+  //     id: "p4",
+  //     title: "LRU Cache",
+  //     difficulty: "Medium",
+  //     tags: ["Hash Table", "Linked List", "Design"],
+  //     sheet: "Blind 75",
+  //     completed: true,
+  //     link: "https://leetcode.com/problems/lru-cache/",
+  //     youtubeLink: "https://youtube.com/watch?v=7ABFKPK2hD4",
+  //   },
+  //   {
+  //     id: "p5",
+  //     title: "Climbing Stairs",
+  //     difficulty: "Easy",
+  //     tags: ["Dynamic Programming"],
+  //     sheet: "Neetcode 150",
+  //     completed: false,
+  //     link: "https://leetcode.com/problems/climbing-stairs/",
+  //     youtubeLink: "https://youtube.com/watch?v=Y0lT9Fck7qI",
+  //   },
+  // ];
+
+  const toggleCheckBox = (id) => {
+    setProblems((prevProblems) =>
+      prevProblems.map((item) =>
+        item.id === id ? { ...item, completed: !item.completed } : item
+      )
+    );
+  };
+
+  useEffect(() => {
+    const neetcode150Problems = neetcode150();
+    const formattedData = neetcode150Problems.map((item) => ({
+      id: uuid(),
+      title: item.problem,
+      difficulty: item.difficulty,
+      tags: [item.pattern],
       sheet: "Neetcode 150",
       completed: false,
-      link: "https://leetcode.com/problems/valid-parentheses/",
-      youtubeLink: "https://youtube.com/watch?v=WTzjTskDFMg",
-    },
-    {
-      id: "p3",
-      title: "Merge K Sorted Lists",
-      difficulty: "Hard",
-      tags: ["Linked List", "Heap", "Divide and Conquer"],
-      sheet: "Strivers SDE",
-      completed: false,
-      link: "https://leetcode.com/problems/merge-k-sorted-lists/",
-      youtubeLink: "https://youtube.com/watch?v=q5a5OiGbT6Q",
-    },
-    {
-      id: "p4",
-      title: "LRU Cache",
-      difficulty: "Medium",
-      tags: ["Hash Table", "Linked List", "Design"],
-      sheet: "Blind 75",
-      completed: true,
-      link: "https://leetcode.com/problems/lru-cache/",
-      youtubeLink: "https://youtube.com/watch?v=7ABFKPK2hD4",
-    },
-    {
-      id: "p5",
-      title: "Climbing Stairs",
-      difficulty: "Easy",
-      tags: ["Dynamic Programming"],
-      sheet: "Neetcode 150",
-      completed: false,
-      link: "https://leetcode.com/problems/climbing-stairs/",
-      youtubeLink: "https://youtube.com/watch?v=Y0lT9Fck7qI",
-    },
-  ];
+      link: "https://leetcode.com/problems/" + item.link,
+      youtubeLink: "https://www.youtube.com/watch?v=" + item.video,
+    }));
+
+    setProblems((prevState) => [...prevState, ...formattedData]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 py-16 px-4 sm:px-6 lg:px-8">
@@ -251,7 +278,10 @@ const TabsContainer = () => {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3 }}
             >
-              <ProblemsList problems={problems} />
+              <ProblemsList
+                problems={problems}
+                toggleCheckBox={toggleCheckBox}
+              />
             </motion.div>
           )}
 
