@@ -281,10 +281,6 @@ const Home = () => {
     animate();
   }, []);
 
-  useEffect(() => {
-    tleSheet();
-  }, []);
-
   return (
     <div className="min-h-screen bg-gray-950 text-white overflow-hidden">
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#080510,#1e1b4b,#080510)] opacity-40 bg-[length:300%_100%] animate-gradient-x -z-10"></div>

@@ -5,7 +5,7 @@ const API_URL = "http://localhost:5000/api/strivers-list";
 export const striversAtoZSheet = async () => {
   try {
     const response = await axios.get(`${API_URL}/a-to-z`);
-    console.log(response);
+    return response.data;
   } catch (error) {
     console.log(error || "Error while fetching data");
   }

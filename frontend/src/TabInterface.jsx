@@ -2,12 +2,20 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProblemsList from "./ProblemsList";
 import SheetsCard from "./SheetsCard";
-import { neetcode150 } from "./stores/neetcodeProblemsList";
+import { neetcodeAll } from "./stores/neetcodeProblemsList";
 import { v4 as uuid } from "uuid";
+import { striversAtoZSheet } from "./stores/striversProblemsList";
+import { gfgContest, gfgSdeSheet } from "./stores/gfgProblemsList";
+import {
+  leetcodeContests,
+  codeforcesContests,
+  codechefContests,
+} from "./stores/contestList";
 
 const TabsContainer = () => {
   const [activeTab, setActiveTab] = useState("sheets");
   const [problems, setProblems] = useState([]);
+  const [contests, setContests] = useState([]);
 
   const sheets = [
     {
@@ -72,90 +80,6 @@ const TabsContainer = () => {
     },
   ];
 
-  const contests = [
-    {
-      name: "Weekly Contest 387",
-      platform: "LeetCode",
-      date: "Apr 06, 2025",
-      duration: "1.5 hrs",
-      difficulty: "Mixed",
-    },
-    {
-      name: "Codeforces Round #912",
-      platform: "Codeforces",
-      date: "Apr 12, 2025",
-      duration: "2 hrs",
-      difficulty: "Advanced",
-    },
-    {
-      name: "Google Kickstart Round A",
-      platform: "Google",
-      date: "Apr 15, 2025",
-      duration: "3 hrs",
-      difficulty: "Hard",
-    },
-    {
-      name: "BiWeekly Contest 124",
-      platform: "LeetCode",
-      date: "Apr 20, 2025",
-      duration: "1.5 hrs",
-      difficulty: "Mixed",
-    },
-  ];
-
-  // const problems = [
-  //   {
-  //     id: "p1",
-  //     title: "Two Sum",
-  //     difficulty: "Easy",
-  //     tags: ["Array", "Hash Table"],
-  //     sheet: "Blind 75",
-  //     completed: true,
-  //     link: "https://leetcode.com/problems/two-sum/",
-  //     youtubeLink: "https://youtube.com/watch?v=KLlXCFG5TnA",
-  //   },
-  //   {
-  //     id: "p2",
-  //     title: "Valid Parentheses",
-  //     difficulty: "Easy",
-  //     tags: ["Stack", "String"],
-  //     sheet: "Neetcode 150",
-  //     completed: false,
-  //     link: "https://leetcode.com/problems/valid-parentheses/",
-  //     youtubeLink: "https://youtube.com/watch?v=WTzjTskDFMg",
-  //   },
-  //   {
-  //     id: "p3",
-  //     title: "Merge K Sorted Lists",
-  //     difficulty: "Hard",
-  //     tags: ["Linked List", "Heap", "Divide and Conquer"],
-  //     sheet: "Strivers SDE",
-  //     completed: false,
-  //     link: "https://leetcode.com/problems/merge-k-sorted-lists/",
-  //     youtubeLink: "https://youtube.com/watch?v=q5a5OiGbT6Q",
-  //   },
-  //   {
-  //     id: "p4",
-  //     title: "LRU Cache",
-  //     difficulty: "Medium",
-  //     tags: ["Hash Table", "Linked List", "Design"],
-  //     sheet: "Blind 75",
-  //     completed: true,
-  //     link: "https://leetcode.com/problems/lru-cache/",
-  //     youtubeLink: "https://youtube.com/watch?v=7ABFKPK2hD4",
-  //   },
-  //   {
-  //     id: "p5",
-  //     title: "Climbing Stairs",
-  //     difficulty: "Easy",
-  //     tags: ["Dynamic Programming"],
-  //     sheet: "Neetcode 150",
-  //     completed: false,
-  //     link: "https://leetcode.com/problems/climbing-stairs/",
-  //     youtubeLink: "https://youtube.com/watch?v=Y0lT9Fck7qI",
-  //   },
-  // ];
-
   const toggleCheckBox = (id) => {
     setProblems((prevProblems) =>
       prevProblems.map((item) =>
@@ -164,24 +88,215 @@ const TabsContainer = () => {
     );
   };
 
-  useEffect(() => {
-    const neetcode150Problems = neetcode150();
-    const formattedData = neetcode150Problems.map((item) => ({
-      id: uuid(),
-      title: item.problem,
-      difficulty: item.difficulty,
-      tags: [item.pattern],
-      sheet: "Neetcode 150",
-      completed: false,
-      link: "https://leetcode.com/problems/" + item.link,
-      youtubeLink: "https://www.youtube.com/watch?v=" + item.video,
-    }));
+  const shuffleArray = (array) => {
+    return array.sort(() => Math.random() - 0.5);
+  };
 
-    setProblems((prevState) => [...prevState, ...formattedData]);
+  // problems useEffect
+  useEffect(() => {
+    const fetchData = async () => {
+      const neetcodeProblems = neetcodeAll();
+      const striversProblems = await striversAtoZSheet();
+      const gfgProblems = gfgSdeSheet();
+
+      // Format Neetcode problems
+      const formattedNeetcode = neetcodeProblems.map((item) => {
+        const sheets = [];
+        if (item.neetcode150) sheets.push("Neetcode 150");
+        if (item.neetcode250) sheets.push("Neetcode 250");
+        if (item.blind75) sheets.push("Blind 75");
+
+        if (sheets.length === 0) sheets.push("Neetcode All");
+
+        return {
+          id: uuid(),
+          title: item.problem,
+          difficulty: item.difficulty,
+          tags: [item.pattern],
+          sheet: sheets.join(", "),
+          completed: false,
+          link: `https://leetcode.com/problems/${item.link}`,
+          youtubeLink: `https://www.youtube.com/watch?v=${item.video}`,
+        };
+      });
+
+      // Format Striver's A2Z problems
+      const formattedStrivers = Array.isArray(striversProblems)
+        ? striversProblems.flatMap((step) =>
+            step.sub_steps.flatMap((subStep) =>
+              subStep.topics.map((topic) => ({
+                id: topic.id,
+                title: topic.question_title,
+                difficulty:
+                  topic.difficulty === 0
+                    ? "Easy"
+                    : topic.difficulty === 1
+                      ? "Medium"
+                      : "Hard",
+                tags: [subStep.sub_step_title],
+                sheet: "Striver's A2Z",
+                completed: false,
+                link:
+                  topic.lc_link ||
+                  topic.gfg_link ||
+                  topic.cs_link ||
+                  topic.post_link, // LC > GFG > CodingNinjas > Blog
+                youtubeLink: topic.yt_link || "",
+              }))
+            )
+          )
+        : [];
+
+      // Format GFG SDE Sheet problems
+      const formattedGfg = Array.isArray(gfgProblems)
+        ? gfgProblems.map((item) => ({
+            id: uuid(),
+            title: item.title,
+            difficulty: item.difficulty || "Unknown",
+            tags: ["GFG SDE Sheet"],
+            sheet: "GFG SDE Sheet",
+            completed: false,
+            link: item.link,
+            youtubeLink: "",
+          }))
+        : [];
+
+      const allProblems = shuffleArray([
+        ...formattedGfg,
+        ...formattedNeetcode,
+        ...formattedStrivers,
+      ]);
+
+      // Update state
+      setProblems(allProblems);
+    };
+
+    fetchData();
+  }, []);
+
+  // contests useEffect
+  const calculateDuration = (start, end) => {
+    const startTime = new Date(start);
+    const endTime = new Date(end);
+    const durationInMinutes = (endTime - startTime) / (1000 * 60);
+    const hours = Math.floor(durationInMinutes / 60);
+    const minutes = Math.floor(durationInMinutes % 60);
+
+    return hours
+      ? `${hours} hours${minutes > 0 ? ` ${minutes} minutes` : ""}`
+      : `${minutes} minutes`;
+  };
+
+  useEffect(() => {
+    const fetchContests = async () => {
+      const gfgContestList = await gfgContest();
+      const leetcodeContestList = await leetcodeContests();
+      const codeforcesContestList = await codeforcesContests();
+      const codechefContestsList = await codechefContests();
+
+      const formattedGfgContests = gfgContestList.data.results.upcoming.map(
+        (eachContest) => ({
+          name: eachContest.name,
+          platform: "GeeksforGeeks",
+          date: eachContest.date,
+          rawDate: new Date(eachContest.date),
+          duration: calculateDuration(
+            eachContest.start_time,
+            eachContest.end_time
+          ),
+          difficulty: "Mixed",
+          link:
+            "https://practice.geeksforgeeks.org/contest/" + eachContest.slug,
+        })
+      );
+
+      const formattedLeetcodeContests = leetcodeContestList.data.map(
+        (eachContest) => {
+          const startDate = new Date(eachContest.startTime);
+          return {
+            name: eachContest.name,
+            platform: "LeetCode",
+            date: startDate.toLocaleDateString("en-US", {
+              month: "short",
+              day: "2-digit",
+              year: "numeric",
+            }),
+            rawDate: startDate, // Add raw date for sorting
+            duration: eachContest.duration,
+            difficulty: "Mixed",
+            link: eachContest.url,
+          };
+        }
+      );
+
+      const formattedCodeForcesContests = codeforcesContestList.data.map(
+        (eachContest) => {
+          const hours = Math.floor(eachContest.durationSeconds / 3600);
+          const minutes = (eachContest.durationSeconds % 3600) / 60;
+          const startDate = new Date(eachContest.startTimeSeconds * 1000);
+
+          return {
+            name: eachContest.name,
+            platform: "Codeforces",
+            date: startDate.toLocaleDateString("en-US", {
+              month: "short",
+              day: "2-digit",
+              year: "numeric",
+            }),
+            rawDate: startDate, // Add raw date for sorting
+            duration: hours
+              ? `${hours} hours${minutes ? ` ${minutes} minutes` : ""}`
+              : `${minutes} minutes`,
+            difficulty: "Hard",
+            link: `https://codeforces.com/contests/${eachContest.id}`,
+          };
+        }
+      );
+
+      const formattedCodechefContests =
+        codechefContestsList.future_contests.map((eachContest) => {
+          const startDate = new Date(eachContest.contest_start_date_iso);
+          return {
+            name: eachContest.contest_name,
+            platform: "CodeChef",
+            date: startDate.toLocaleDateString("en-US", {
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            }),
+            rawDate: startDate, // Add raw date for sorting
+            duration: calculateDuration(
+              eachContest.contest_start_date,
+              eachContest.contest_end_date
+            ),
+            difficulty: "Easy",
+            link: `https://www.codechef.com/${eachContest.contest_code}`,
+          };
+        });
+
+      // Combine all contests
+      const allContests = [
+        ...formattedGfgContests,
+        ...formattedLeetcodeContests,
+        ...formattedCodeForcesContests,
+        ...formattedCodechefContests,
+      ];
+
+      // Sort contests by date (chronological order)
+      const sortedContests = allContests.sort((a, b) => a.rawDate - b.rawDate);
+
+      // Remove the raw date property after sorting
+      const cleanedContests = sortedContests.map(
+        ({ rawDate, ...rest }) => rest
+      );
+
+      setContests((prevContests) => [...prevContests, ...cleanedContests]);
+    };
+    fetchContests();
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-950 py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-3xl md:text-4xl lg:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400 inline-block">
@@ -399,13 +514,16 @@ const TabsContainer = () => {
                     </div>
 
                     <div className="mt-6">
-                      <motion.button
+                      <motion.a
+                        href={contest.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         className="w-full py-2 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-medium text-sm flex items-center justify-center"
                       >
                         Register Now
-                      </motion.button>
+                      </motion.a>
                     </div>
                   </motion.div>
                 ))}

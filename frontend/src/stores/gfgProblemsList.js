@@ -1,3 +1,7 @@
+import axios from "axios";
+
+const API_URL = "http://localhost:5000/api/gfg-contest";
+
 const problems = [
   {
     title: "Find Missing and Repeating element",
@@ -1227,3 +1231,12 @@ const problems = [
 ];
 
 export const gfgSdeSheet = () => problems;
+
+export const gfgContest = async () => {
+  try {
+    const response = axios.get(API_URL);
+    return response;
+  } catch (error) {
+    console.log(error || "Error fetching gfg contest");
+  }
+};

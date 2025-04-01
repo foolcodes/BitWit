@@ -8,7 +8,7 @@ const ProblemsList = ({ problems, toggleCheckBox }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [randomProblem, setRandomProblem] = useState(null);
   const [showRandomProblem, setShowRandomProblem] = useState(false);
-  const problemsPerPage = 10;
+  const problemsPerPage = 20;
 
   const filteredProblems = problems.filter((problem) => {
     const matchesSearch =
@@ -193,22 +193,39 @@ const ProblemsList = ({ problems, toggleCheckBox }) => {
             </div>
 
             <div className="flex space-x-4">
-              <a
-                href={randomProblem.youtubeLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex-1 flex justify-center items-center px-4 py-2 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors duration-200"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mr-2"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
+              {randomProblem.youtubeLink ? (
+                <a
+                  href={randomProblem.youtubeLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 flex justify-center items-center px-4 py-2 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors duration-200"
                 >
-                  <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
-                </svg>
-                <span>Watch Solution</span>
-              </a>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-2"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                  </svg>
+                  <span>Watch Solution</span>
+                </a>
+              ) : (
+                <button
+                  disabled
+                  className="flex-1 flex justify-center items-center px-4 py-2 rounded-lg bg-gray-500/20 text-gray-400 border border-gray-500/30 cursor-not-allowed"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 mr-2"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                  </svg>
+                  <span>No Solution Available</span>
+                </button>
+              )}
 
               <a
                 href={randomProblem.link}
@@ -319,22 +336,41 @@ const ProblemsList = ({ problems, toggleCheckBox }) => {
 
                 {/* Action buttons */}
                 <div className="mt-4 sm:mt-0 flex items-center space-x-2 sm:space-x-3">
-                  <a
-                    href={problem.youtubeLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors duration-200"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 mr-1.5"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
+                  {problem.youtubeLink ? (
+                    <a
+                      href={problem.youtubeLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors duration-200"
                     >
-                      <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
-                    </svg>
-                    <span className="text-xs font-medium">Solution</span>
-                  </a>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-1.5"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                      </svg>
+                      <span className="text-xs font-medium">Solution</span>
+                    </a>
+                  ) : (
+                    <button
+                      disabled
+                      className="inline-flex items-center px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-colors duration-200 cursor-not-allowed"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-1.5"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                      </svg>
+                      <span className="text-xs font-medium">
+                        No Solution Available
+                      </span>
+                    </button>
+                  )}
 
                   <a
                     href={problem.link}
