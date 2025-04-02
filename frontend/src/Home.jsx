@@ -17,6 +17,7 @@ import {
   Zap,
   Navigation,
   ExternalLinkIcon,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -337,6 +338,16 @@ const Home = () => {
               className="bg-gradient-to-r from-[#0c6da1] to-[#05a8ff] text-white px-8 py-6 font-medium text-base rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_20px_80px_-10px_rgba(12,109,161,1)] border-0 cursor-pointer"
             >
               Get Started
+            </Button>
+
+            <Button
+              onClick={() =>
+                (window.location.href = "https://github.com/foolcodes/BitWit")
+              }
+              size="lg"
+              className="bg-transparent border border-gray-600 text-white px-8 py-6 font-medium text-base rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_20px_80px_-10px_rgba(12,109,161,1)] cursor-pointer"
+            >
+              <Star /> Start us
             </Button>
           </motion.div>
 
