@@ -6,7 +6,7 @@ import path from "path";
 const app = express();
 const _dirname = path.resolve();
 
-app.use(cors());
+app.use(cors({ origin: "http://localhost:5000", credentials: true }));
 app.use(express.json());
 app.use(express.static(path.join(_dirname, "/frontend/dist")));
 const PORT = 5000;

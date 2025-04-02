@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://bitwit.onrender.com/problems-contests/api";
+const API_URL = "https://bitwit.onrender.com/api";
 
 const problems = [
   {

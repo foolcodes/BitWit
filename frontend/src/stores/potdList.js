@@ -3,7 +3,7 @@ import axios from "axios";
 export const gfgPotd = async () => {
   try {
     const response = await axios.get(
-      "https://bitwit.onrender.com/problems-contests/api/gfg-potd"
+      "https://bitwit.onrender.com/api/gfg-potd"
     );
     return response.data;
   } catch (error) {
@@ -14,7 +14,7 @@ export const gfgPotd = async () => {
 export const leetcodePotd = async () => {
   try {
     const response = await axios.get(
-      "https://bitwit.onrender.com/problems-contests/leetcode-potd"
+      "https://bitwit.onrender.com/api/leetcode-potd"
     );
     return response ? response.data : null;
   } catch (error) {

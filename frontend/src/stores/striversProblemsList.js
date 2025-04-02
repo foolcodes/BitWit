@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_URL =
-  "https://bitwit.onrender.com/problems-contests/api/strivers-list";
+const API_URL = "https://bitwit.onrender.com/api/strivers-list";
 
 export const striversAtoZSheet = async () => {
   try {
@@ -40,7 +39,7 @@ export const striversBlind75 = async () => {
 export const tleSheet = async () => {
   try {
     const response = await axios.get(
-      "https://bitwit.onrender.com/problems-contests/api/tle-sheet"
+      "https://bitwit.onrender.com/api/tle-sheet"
     );
     console.log(response);
   } catch (error) {
