@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 
 const SheetsCard = ({ details }) => {
-  const { name, duration, problems, difficulty } = details;
+  const { name, duration, problems, difficulty, link } = details;
 
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
@@ -103,6 +103,7 @@ const SheetsCard = ({ details }) => {
 
         <div className="mt-auto">
           <motion.button
+            onClick={() => (window.location.href = link)}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             className="w-full py-2.5 rounded-lg bg-gray-800 border border-gray-700/50 text-white font-medium text-sm flex items-center justify-center group transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-500 hover:to-cyan-500 hover:border-transparent"

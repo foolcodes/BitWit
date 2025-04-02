@@ -20,19 +20,13 @@ import {
   Bell,
   ExternalLink,
   Play,
+  Navigation,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { neetcode150 } from "./stores/neetcodeProblemsList";
-import {
-  striversAtoZSheet,
-  striversSdeSheet,
-  strivers79Sheet,
-  striversBlind75,
-  tleSheet,
-} from "./stores/striversProblemsList";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const threeJsRef = useRef(null);
@@ -132,6 +126,7 @@ const Home = () => {
       platform: "GeeksforGeeks",
       solvedCount: 458,
       tags: ["dp", "arrays"],
+      link: "https://www.geeksforgeeks.org/dynamic-programming/",
     },
     {
       id: 2,
@@ -140,6 +135,7 @@ const Home = () => {
       platform: "Codeforces",
       solvedCount: 1024,
       tags: ["graphs", "bfs", "dfs"],
+      link: "https://codeforces.com/problemset?tags=graphs",
     },
     {
       id: 3,
@@ -148,41 +144,46 @@ const Home = () => {
       platform: "LeetCode",
       solvedCount: 2356,
       tags: ["trees", "recursion"],
+      link: "https://leetcode.com/problems/balanced-binary-tree/",
     },
     {
       id: 4,
-      title: "Network Flow Maximization",
-      difficulty: "Hard",
-      platform: "AtCoder",
-      solvedCount: 346,
-      tags: ["flow networks", "graphs"],
+      title: "Two Sum",
+      difficulty: "Easy",
+      platform: "LeetCode",
+      solvedCount: 160000,
+      tags: ["Array", "Hash Table"],
+      link: "https://leetcode.com/problems/two-sum/",
     },
   ];
 
   const trendingProblems = [
     {
       id: 1,
-      title: "String Permutation Challenges",
+      title: "String Permutations",
       difficulty: "Medium",
       platform: "LeetCode",
       solvedCount: 3641,
       tags: ["strings", "backtracking"],
+      link: "https://leetcode.com/problems/permutations/",
     },
     {
       id: 2,
-      title: "Efficient Matrix Operations",
+      title: "Matrix Exponentiation",
       difficulty: "Medium",
       platform: "Codeforces",
       solvedCount: 1587,
       tags: ["matrices", "optimization"],
+      link: "https://codeforces.com/problemset/problem/1234/D",
     },
     {
       id: 3,
-      title: "Segment Tree Applications",
+      title: "Segment Tree for Range Queries",
       difficulty: "Hard",
       platform: "CodeChef",
       solvedCount: 852,
       tags: ["data structures", "trees"],
+      link: "https://www.codechef.com/problems/RANGEQ",
     },
   ];
 
@@ -191,7 +192,6 @@ const Home = () => {
     LeetCode: "bg-gradient-to-r from-amber-500 to-amber-600",
     CodeChef: "bg-gradient-to-r from-red-600 to-red-700",
     GeeksforGeeks: "bg-gradient-to-r from-green-600 to-green-700",
-    AtCoder: "bg-gradient-to-r from-purple-600 to-purple-700",
     HackerRank: "bg-gradient-to-r from-teal-600 to-teal-700",
   };
 
@@ -200,6 +200,8 @@ const Home = () => {
     Medium: "bg-gradient-to-r from-amber-500 to-amber-600 text-black",
     Hard: "bg-gradient-to-r from-rose-500 to-rose-600 text-white",
   };
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800);
@@ -334,21 +336,11 @@ const Home = () => {
             className="flex flex-col sm:flex-row gap-5 justify-center"
           >
             <Button
+              onClick={() => navigate("/problems-contests")}
               size="lg"
               className="bg-gradient-to-r from-[#0c6da1] to-[#05a8ff] text-white px-8 py-6 font-medium text-base rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-[0_20px_80px_-10px_rgba(12,109,161,1)] border-0 cursor-pointer"
             >
               Get Started
-            </Button>
-
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-indigo-600/40 hover:bg-indigo-900/30 text-white px-8 py-6 font-medium text-base rounded-lg backdrop-blur-sm"
-            >
-              <span className="mr-2">
-                <Play />
-              </span>
-              Watch Demo
             </Button>
           </motion.div>
 
@@ -401,7 +393,7 @@ const Home = () => {
           {[
             {
               icon: <Trophy className="h-6 w-6 text-amber-400" />,
-              value: "450+",
+              value: "10+",
               label: "Weekly Contests",
             },
             {
@@ -411,7 +403,7 @@ const Home = () => {
             },
             {
               icon: <Building className="h-6 w-6 text-emerald-400" />,
-              value: "5+",
+              value: "4+",
               label: "Platforms",
             },
           ].map((stat, idx) => (
@@ -486,6 +478,12 @@ const Home = () => {
                       "Track your progress with detailed insights and performance metrics tailored to your goals",
                   },
                   {
+                    icon: <Zap className="h-8 w-8 text-yellow-400" />,
+                    title: "Speed Challenges",
+                    description:
+                      "Boost your coding efficiency by saving time and energy—no more jumping between sites. Focus on what truly matters!",
+                  },
+                  {
                     icon: <PieChart className="h-8 w-8 text-rose-400" />,
                     title: "Skill Assessment",
                     description:
@@ -504,12 +502,7 @@ const Home = () => {
                       "Follow curated problem sets designed by competitive programming champions",
                   },
 
-                  {
-                    icon: <Zap className="h-8 w-8 text-yellow-400" />,
-                    title: "Speed Challenges",
-                    description:
-                      "Improve your coding velocity by saving your time and energy navigating site by site and use it elsewhere",
-                  },
+                  ,
                 ].map((feature, idx) => (
                   <motion.div
                     key={idx}
@@ -733,7 +726,6 @@ const Home = () => {
 
         {/* Featured Problems Section */}
         <motion.div
-          ref={problemsRef}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
@@ -835,11 +827,15 @@ const Home = () => {
                               ))}
                             </div>
                             <Button
+                              onClick={() =>
+                                (window.location.href = problem.link)
+                              }
                               variant="outline"
                               size="sm"
                               className="w-full border-[#0c6da1] hover:bg-[#0c6da1] text-white"
                             >
-                              <Bookmark className="h-4 w-4 mr-2" /> Save Problem
+                              <Navigation className="h-4 w-4 mr-2" /> Solve
+                              Problem
                             </Button>
                           </CardContent>
                         </Card>
@@ -908,11 +904,15 @@ const Home = () => {
                               ))}
                             </div>
                             <Button
+                              onClick={() =>
+                                (window.location.href = problem.link)
+                              }
                               variant="outline"
                               size="sm"
                               className="w-full border-[#0c6da1] hover:bg-[#0c6da1] text-white"
                             >
-                              <Bookmark className="h-4 w-4 mr-2" /> Save Problem
+                              <Navigation className="h-4 w-4 mr-2" /> Solve
+                              Problem
                             </Button>
                           </CardContent>
                         </Card>
@@ -924,6 +924,7 @@ const Home = () => {
 
           <motion.div variants={fadeInUp} className="flex justify-center">
             <Button
+              onClick={() => navigate("/problems-contests")}
               variant="outline"
               className="border-gray-700/50 hover:bg-gray-800/50 text-white group transition duration-300"
             >
@@ -934,10 +935,7 @@ const Home = () => {
         </motion.div>
 
         {/* CTA Section */}
-        <div
-          ref={ctaRef}
-          className="rounded-2xl overflow-hidden p-1 bg-gradient-to-r from-[#89c9ec] via-[#05a8ff] to-[#0c6da1] bg-[length:200%_100%] animate-gradient-x"
-        >
+        <div className="rounded-2xl overflow-hidden p-1 bg-gradient-to-r from-[#89c9ec] via-[#05a8ff] to-[#0c6da1] bg-[length:200%_100%] animate-gradient-x">
           <div className="bg-[#03080c] rounded-xl p-8 md:p-12 text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#e5eff5]">
               Ready to level up your coding skills?
@@ -947,10 +945,11 @@ const Home = () => {
               to coding excellence today.
             </p>
             <Button
+              onClick={() => navigate("/problems-contests")}
               size="lg"
               className="bg-[#05a8ff] hover:bg-[#0c6da1] text-white px-8 font-medium text-base transition-colors"
             >
-              Create Account
+              Start Practicing
             </Button>
           </div>
         </div>

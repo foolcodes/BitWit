@@ -11,89 +11,121 @@ import {
   codeforcesContests,
   codechefContests,
 } from "./stores/contestList";
+import { gfgPotd, leetcodePotd } from "./stores/potdList";
 
 const TabsContainer = () => {
   const [activeTab, setActiveTab] = useState("sheets");
   const [problems, setProblems] = useState([]);
   const [contests, setContests] = useState([]);
-
-  const sheets = [
-    {
-      name: "Strivers AtoZ Sheet",
-      duration: "30hrs",
-      problems: "455",
-      difficulty: "Comprehensive",
-    },
-    {
-      name: "Strivers SDE Sheet",
-      duration: "30hrs",
-      problems: "455",
-      difficulty: "Advanced",
-    },
-    {
-      name: "Strivers AtoZ Sheet",
-      duration: "30hrs",
-      problems: "455",
-      difficulty: "Comprehensive",
-    },
-    {
-      name: "Strivers Blind 75 Sheet",
-      duration: "30hrs",
-      problems: "455",
-      difficulty: "Intermediate",
-    },
-    {
-      name: "Strivers 79 Last Moment DSA Sheet",
-      duration: "30hrs",
-      problems: "455",
-      difficulty: "Advanced",
-    },
-    {
-      name: "GFG Sheet",
-      duration: "30hrs",
-      problems: "455",
-      difficulty: "Varied",
-    },
-    {
-      name: "Neetcode 150 Sheet",
-      duration: "30hrs",
-      problems: "150",
-      difficulty: "Intermediate",
-    },
-    {
-      name: "Neetcode 250 Sheet",
-      duration: "30hrs",
-      problems: "250",
-      difficulty: "Advanced",
-    },
-    {
-      name: "Neetcode All Sheet",
-      duration: "30hrs",
-      problems: "455",
-      difficulty: "Comprehensive",
-    },
-    {
-      name: "Neetcode Blind 75 Sheet",
-      duration: "30hrs",
-      problems: "455",
-      difficulty: "Interview Prep",
-    },
-  ];
-
-  const toggleCheckBox = (id) => {
-    setProblems((prevProblems) =>
-      prevProblems.map((item) =>
-        item.id === id ? { ...item, completed: !item.completed } : item
-      )
-    );
-  };
+  const [potds, setPotds] = useState([]);
 
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
   };
 
+  const sheets = [
+    {
+      name: "Strivers AtoZ Sheet",
+      duration: "270 hrs",
+      problems: "455",
+      difficulty: "Comprehensive",
+      link: "https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2",
+    },
+
+    {
+      name: "Neetcode 250 Sheet",
+      duration: "140 hrs",
+      problems: "250",
+      difficulty: "Advanced",
+      link: "https://neetcode.io/practice?tab=neetcode250",
+    },
+
+    {
+      name: "TLE CP-31 Sheet",
+      duration: "200 hrs",
+      problems: "372",
+      difficulty: "Advanced",
+      link: "https://www.tle-eliminators.com/cp-sheet",
+    },
+
+    {
+      name: "Neetcode All Sheet",
+      duration: "410 hrs",
+      problems: "793",
+      difficulty: "Comprehensive",
+      link: "https://neetcode.io/practice?tab=allNC",
+    },
+
+    {
+      name: "Strivers 79 Sheet",
+      duration: "50 hrs",
+      problems: "79",
+      difficulty: "Comprehensive",
+      link: "https://takeuforward.org/interview-sheets/strivers-79-last-moment-dsa-sheet-ace-interviews",
+    },
+    {
+      name: "Neetcode 150 Sheet",
+      duration: "90 hrs",
+      problems: "150",
+      difficulty: "Intermediate",
+      link: "https://neetcode.io/practice?tab=neetcode150",
+    },
+
+    {
+      name: "Strivers Blind 75 Sheet",
+      duration: "50 hrs",
+      problems: "75",
+      difficulty: "Interview Prep",
+      link: "https://takeuforward.org/interviews/blind-75-leetcode-problems-detailed-video-solutions",
+    },
+    {
+      name: "GFG Sheet",
+      duration: "30 hrs",
+      problems: "140",
+      difficulty: "Advanced",
+      link: "https://www.geeksforgeeks.org/sde-sheet-a-complete-guide-for-sde-preparation/?itm_source=geeksforgeeks&itm_medium=main_header&itm_campaign=practice_header",
+    },
+    {
+      name: "Strivers SDE Sheet",
+      duration: "110 hrs",
+      problems: "191",
+      difficulty: "Interview Prep",
+      link: "https://takeuforward.org/interviews/strivers-sde-sheet-top-coding-interview-problems",
+    },
+    {
+      name: "Neetcode Blind 75 Sheet",
+      duration: "50 hrs",
+      problems: "75",
+      difficulty: "Interview Prep",
+      link: "https://neetcode.io/practice?tab=blind75",
+    },
+  ];
+
+  const toggleCheckBox = (id) => {
+    setProblems((prevProblems) => {
+      const updatedProblems = prevProblems.map((item) =>
+        item.id === id ? { ...item, completed: !item.completed } : item
+      );
+
+      // Update localStorage whenever a problem's completion status changes
+      localStorage.setItem("problems", JSON.stringify(updatedProblems));
+
+      return updatedProblems;
+    });
+  };
+
   // problems useEffect
   useEffect(() => {
+    // fChecking if we have problems in localStorage
+    const storedProblems = localStorage.getItem("problems");
+
+    if (storedProblems) {
+      // If we have stored problems, using those instead of fetching new ones
+      setProblems(JSON.parse(storedProblems));
+      return;
+    }
+
+    // If no stored problems, fetch them
     const fetchData = async () => {
       const neetcodeProblems = neetcodeAll();
       const striversProblems = await striversAtoZSheet();
@@ -169,12 +201,47 @@ const TabsContainer = () => {
 
       // Update state
       setProblems(allProblems);
+      localStorage.setItem("problems", JSON.stringify(allProblems));
     };
 
     fetchData();
   }, []);
 
-  // contests useEffect
+  // potd useEffect
+  useEffect(() => {
+    const fetchData = async () => {
+      const lcPOTD = await leetcodePotd();
+      const gfgPOTD = await gfgPotd();
+
+      const lcAbbrevation = lcPOTD.data.activeDailyCodingChallengeQuestion;
+      const formattedLcPotd = {
+        id: uuid(),
+        title: lcAbbrevation.question.title,
+        difficulty: lcAbbrevation.question.difficulty,
+        tags: lcAbbrevation.question.topicTags.map((tag) => tag.name),
+        sheet: "Leetcode",
+        completed: false,
+        link: "https://leetcode.com" + lcAbbrevation.link,
+        yt_link: "",
+      };
+
+      const formattedGfgPotd = {
+        id: uuid(),
+        title: gfgPOTD.problem_name,
+        difficulty: "Medium",
+        tags: gfgPOTD.tags.topic_tags,
+        sheet: "GFG",
+        completed: false,
+        link: gfgPOTD.problem_url,
+        yt_link: "",
+      };
+      setPotds([formattedGfgPotd, formattedLcPotd]);
+    };
+    fetchData();
+  }, []);
+
+  // contests fetching useEffect below
+
   const calculateDuration = (start, end) => {
     const startTime = new Date(start);
     const endTime = new Date(end);
@@ -221,7 +288,7 @@ const TabsContainer = () => {
               day: "2-digit",
               year: "numeric",
             }),
-            rawDate: startDate, // Add raw date for sorting
+            rawDate: startDate,
             duration: eachContest.duration,
             difficulty: "Mixed",
             link: eachContest.url,
@@ -243,7 +310,7 @@ const TabsContainer = () => {
               day: "2-digit",
               year: "numeric",
             }),
-            rawDate: startDate, // Add raw date for sorting
+            rawDate: startDate,
             duration: hours
               ? `${hours} hours${minutes ? ` ${minutes} minutes` : ""}`
               : `${minutes} minutes`,
@@ -264,7 +331,7 @@ const TabsContainer = () => {
               month: "long",
               year: "numeric",
             }),
-            rawDate: startDate, // Add raw date for sorting
+            rawDate: startDate,
             duration: calculateDuration(
               eachContest.contest_start_date,
               eachContest.contest_end_date
@@ -274,7 +341,6 @@ const TabsContainer = () => {
           };
         });
 
-      // Combine all contests
       const allContests = [
         ...formattedGfgContests,
         ...formattedLeetcodeContests,
@@ -282,16 +348,12 @@ const TabsContainer = () => {
         ...formattedCodechefContests,
       ];
 
-      // Sort contests by date (chronological order)
+      // Sorting contests by date
       const sortedContests = allContests.sort((a, b) => a.rawDate - b.rawDate);
 
-      // Remove the raw date property after sorting
-      const cleanedContests = sortedContests.map(
-        ({ rawDate, ...rest }) => rest
-      );
-
-      setContests((prevContests) => [...prevContests, ...cleanedContests]);
+      setContests(sortedContests);
     };
+
     fetchContests();
   }, []);
 
@@ -395,6 +457,7 @@ const TabsContainer = () => {
             >
               <ProblemsList
                 problems={problems}
+                potd={potds}
                 toggleCheckBox={toggleCheckBox}
               />
             </motion.div>

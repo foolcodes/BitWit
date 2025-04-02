@@ -163,4 +163,65 @@ app.get("/api/codechef-contest", async (req, res) => {
   }
 });
 
+app.get("/api/leetcode-potd", async (req, res) => {
+  try {
+    const query = `
+        query questionOfToday {
+          activeDailyCodingChallengeQuestion {
+            date
+            userStatus
+            link
+            question {
+              titleSlug
+              title
+              translatedTitle
+              acRate
+              difficulty
+              freqBar
+              frontendQuestionId: questionFrontendId
+              isFavor
+              paidOnly: isPaidOnly
+              status
+              hasVideoSolution
+              hasSolution
+              topicTags {
+                name
+                id
+                slug
+              }
+            }
+          }
+        }
+      `;
+
+    const response = await axios.post(
+      "https://leetcode.com/graphql/",
+      {
+        operationName: "questionOfToday",
+        query: query,
+        variables: {},
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    res.json(response.data);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+app.get("/api/gfg-potd", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://practiceapi.geeksforgeeks.org/api/vr/problems-of-day/problem/today/"
+    );
+    res.json(response.data);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
 app.listen(PORT, () => console.log("Server listening on port 5000"));
