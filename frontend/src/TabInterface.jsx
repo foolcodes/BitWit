@@ -519,8 +519,8 @@ const TabsContainer = () => {
           )}
 
           {activeTab === "contests" && (
-            <div className="flex flex-col justify-center items-center">
-              <div className="flex space-x-2 overflow-x-auto pb-2 sm:pb-0 mb-7">
+            <div className="flex flex-col">
+              <div className="flex space-x-2 overflow-x-auto pb-2 sm:pb-0 mb-7 justify-center">
                 {[
                   "All",
                   "LeetCode",
