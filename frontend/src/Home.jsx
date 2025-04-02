@@ -358,11 +358,9 @@ const Home = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.8 }}
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-gray-400"
+          className="fixed bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-gray-400"
         >
-          <span className="text-sm mb-2 font-light tracking-wide">
-            Scroll to explore
-          </span>
+          <span className="text-sm mb-2 font-light tracking-wide"></span>
           <div className="w-6 h-10 mb-4 border border-gray-500 rounded-full flex justify-center p-1">
             <motion.div
               className="w-1.5 h-1.5 bg-cyan-400 rounded-full"
