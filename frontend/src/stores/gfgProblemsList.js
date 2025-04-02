@@ -1235,8 +1235,8 @@ export const gfgSdeSheet = () => problems;
 export const gfgContest = async () => {
   try {
     const response = axios.get(API_URL);
-    return response;
+    return response || [];
   } catch (error) {
-    console.log(error || "Error fetching gfg contest");
+    return [];
   }
 };

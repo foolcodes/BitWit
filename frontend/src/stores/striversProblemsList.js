@@ -7,14 +7,13 @@ export const striversAtoZSheet = async () => {
     const response = await axios.get(`${API_URL}/a-to-z`);
     return response.data;
   } catch (error) {
-    console.log(error || "Error while fetching data");
+    return [];
   }
 };
 
 export const striversSdeSheet = async () => {
   try {
     const response = await axios.get(`${API_URL}/sde-sheet`);
-    console.log(response);
   } catch (error) {
     console.log(error || "Error fetching sde sheet");
   }
@@ -32,7 +31,6 @@ export const strivers79Sheet = async () => {
 export const striversBlind75 = async () => {
   try {
     const response = await axios.get(`${API_URL}/bind-75`);
-    console.log(response);
   } catch (error) {
     console.log(error || "Error fetching blind 75 sheet");
   }

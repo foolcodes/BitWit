@@ -1,10 +1,10 @@
 import axios from "axios";
 
+const API_URL = "http://localhost:5000/api";
+
 export const leetcodeContests = async () => {
   try {
-    const contests = await axios.get(
-      "http://localhost:5000/api/leetcode-contest"
-    );
+    const contests = await axios.get(`${API_URL}/leetcode-contest`);
     return contests;
   } catch (error) {
     return [];
@@ -13,9 +13,7 @@ export const leetcodeContests = async () => {
 
 export const codeforcesContests = async () => {
   try {
-    const response = await axios.get(
-      "http://localhost:5000/api/codeforces-contest"
-    );
+    const response = await axios.get(`${API_URL}/codeforces-contest`);
     return response || [];
   } catch (error) {
     return [];
@@ -24,10 +22,19 @@ export const codeforcesContests = async () => {
 
 export const codechefContests = async () => {
   try {
-    const response = await axios.get(
-      "http://localhost:5000/api/codechef-contest"
-    );
+    const response = await axios.get(`${API_URL}/codechef-contest`);
+
     return response.data || [];
+  } catch (error) {
+    return [];
+  }
+};
+
+export const hackerrankContests = async () => {
+  try {
+    const response = await axios.get(`${API_URL}/hackerrank-contest`);
+
+    return response.data ? response.data : [];
   } catch (error) {
     return [];
   }

@@ -10,6 +10,7 @@ import {
   leetcodeContests,
   codeforcesContests,
   codechefContests,
+  hackerrankContests,
 } from "./stores/contestList";
 import { gfgPotd, leetcodePotd } from "./stores/potdList";
 
@@ -18,6 +19,10 @@ const TabsContainer = () => {
   const [problems, setProblems] = useState([]);
   const [contests, setContests] = useState([]);
   const [potds, setPotds] = useState([]);
+  const [filteredContests, setFilteredContests] = useState([]);
+  const [isContestsLoading, setIsContestsLoading] = useState(true);
+
+  const [platformFilter, setPlatformFilter] = useState("All");
 
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
@@ -113,6 +118,11 @@ const TabsContainer = () => {
       return updatedProblems;
     });
   };
+
+  // React example with react-router
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]); // Scroll to top when the route changes
 
   // problems useEffect
   useEffect(() => {
@@ -256,106 +266,151 @@ const TabsContainer = () => {
 
   useEffect(() => {
     const fetchContests = async () => {
-      const gfgContestList = await gfgContest();
-      const leetcodeContestList = await leetcodeContests();
-      const codeforcesContestList = await codeforcesContests();
-      const codechefContestsList = await codechefContests();
+      setIsContestsLoading(true);
+      try {
+        const gfgContestList = await gfgContest();
+        const leetcodeContestList = await leetcodeContests();
+        const codeforcesContestList = await codeforcesContests();
+        const codechefContestsList = await codechefContests();
+        const hackerrankContestsList = await hackerrankContests();
 
-      const formattedGfgContests = gfgContestList.data.results.upcoming.map(
-        (eachContest) => ({
-          name: eachContest.name,
-          platform: "GeeksforGeeks",
-          date: eachContest.date,
-          rawDate: new Date(eachContest.date),
-          duration: calculateDuration(
-            eachContest.start_time,
-            eachContest.end_time
-          ),
-          difficulty: "Mixed",
-          link:
-            "https://practice.geeksforgeeks.org/contest/" + eachContest.slug,
-        })
-      );
+        const formattedHackerrankContests =
+          hackerrankContestsList.data.events.ongoing_events.map(
+            (eachContest) => {
+              const startDate = new Date(eachContest.attributes.start_time);
+              const endDate = new Date(eachContest.attributes.end_time);
 
-      const formattedLeetcodeContests = leetcodeContestList.data.map(
-        (eachContest) => {
-          const startDate = new Date(eachContest.startTime);
-          return {
+              return {
+                name: eachContest.attributes.name,
+                platform: "HackerRank",
+                description: eachContest.attributes.description,
+                date: startDate.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "2-digit",
+                }),
+                rawDate: startDate,
+                duration: calculateDuration(startDate, endDate),
+                difficulty: "Mixed",
+                link: eachContest.attributes.microsite_url,
+              };
+            }
+          );
+
+        const formattedGfgContests = gfgContestList.data.results.upcoming.map(
+          (eachContest) => ({
             name: eachContest.name,
-            platform: "LeetCode",
-            date: startDate.toLocaleDateString("en-US", {
-              month: "short",
-              day: "2-digit",
-              year: "numeric",
-            }),
-            rawDate: startDate,
-            duration: eachContest.duration,
-            difficulty: "Mixed",
-            link: eachContest.url,
-          };
-        }
-      );
-
-      const formattedCodeForcesContests = codeforcesContestList.data.map(
-        (eachContest) => {
-          const hours = Math.floor(eachContest.durationSeconds / 3600);
-          const minutes = (eachContest.durationSeconds % 3600) / 60;
-          const startDate = new Date(eachContest.startTimeSeconds * 1000);
-
-          return {
-            name: eachContest.name,
-            platform: "Codeforces",
-            date: startDate.toLocaleDateString("en-US", {
-              month: "short",
-              day: "2-digit",
-              year: "numeric",
-            }),
-            rawDate: startDate,
-            duration: hours
-              ? `${hours} hours${minutes ? ` ${minutes} minutes` : ""}`
-              : `${minutes} minutes`,
-            difficulty: "Hard",
-            link: `https://codeforces.com/contests/${eachContest.id}`,
-          };
-        }
-      );
-
-      const formattedCodechefContests =
-        codechefContestsList.future_contests.map((eachContest) => {
-          const startDate = new Date(eachContest.contest_start_date_iso);
-          return {
-            name: eachContest.contest_name,
-            platform: "CodeChef",
-            date: startDate.toLocaleDateString("en-US", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-            }),
-            rawDate: startDate,
+            platform: "GeeksforGeeks",
+            date: eachContest.date,
+            rawDate: new Date(eachContest.date),
             duration: calculateDuration(
-              eachContest.contest_start_date,
-              eachContest.contest_end_date
+              eachContest.start_time,
+              eachContest.end_time
             ),
-            difficulty: "Easy",
-            link: `https://www.codechef.com/${eachContest.contest_code}`,
-          };
-        });
+            difficulty: "Mixed",
+            link:
+              "https://practice.geeksforgeeks.org/contest/" + eachContest.slug,
+          })
+        );
 
-      const allContests = [
-        ...formattedGfgContests,
-        ...formattedLeetcodeContests,
-        ...formattedCodeForcesContests,
-        ...formattedCodechefContests,
-      ];
+        const formattedLeetcodeContests = leetcodeContestList.data.map(
+          (eachContest) => {
+            const startDate = new Date(eachContest.startTime);
+            return {
+              name: eachContest.name,
+              platform: "LeetCode",
+              date: startDate.toLocaleDateString("en-US", {
+                month: "short",
+                day: "2-digit",
+                year: "numeric",
+              }),
+              rawDate: startDate,
+              duration: eachContest.duration,
+              difficulty: "Mixed",
+              link: eachContest.url,
+            };
+          }
+        );
 
-      // Sorting contests by date
-      const sortedContests = allContests.sort((a, b) => a.rawDate - b.rawDate);
+        const formattedCodeForcesContests = codeforcesContestList.data.map(
+          (eachContest) => {
+            const hours = Math.floor(eachContest.durationSeconds / 3600);
+            const minutes = (eachContest.durationSeconds % 3600) / 60;
+            const startDate = new Date(eachContest.startTimeSeconds * 1000);
 
-      setContests(sortedContests);
+            return {
+              name: eachContest.name,
+              platform: "Codeforces",
+              date: startDate.toLocaleDateString("en-US", {
+                month: "short",
+                day: "2-digit",
+                year: "numeric",
+              }),
+              rawDate: startDate,
+              duration: hours
+                ? `${hours} hours${minutes ? ` ${minutes} minutes` : ""}`
+                : `${minutes} minutes`,
+              difficulty: "Hard",
+              link: `https://codeforces.com/contests/${eachContest.id}`,
+            };
+          }
+        );
+
+        const formattedCodechefContests =
+          codechefContestsList.future_contests.map((eachContest) => {
+            const startDate = new Date(eachContest.contest_start_date_iso);
+            return {
+              name: eachContest.contest_name,
+              platform: "CodeChef",
+              date: startDate.toLocaleDateString("en-US", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              }),
+              rawDate: startDate,
+              duration: calculateDuration(
+                eachContest.contest_start_date,
+                eachContest.contest_end_date
+              ),
+              difficulty: "Easy",
+              link: `https://www.codechef.com/${eachContest.contest_code}`,
+            };
+          });
+
+        const allContests = [
+          ...formattedGfgContests,
+          ...formattedLeetcodeContests,
+          ...formattedCodeForcesContests,
+          ...formattedCodechefContests,
+          ...formattedHackerrankContests,
+        ];
+
+        // Sorting contests by date
+        const sortedContests = allContests.sort(
+          (a, b) => a.rawDate - b.rawDate
+        );
+
+        setContests(sortedContests);
+        setFilteredContests(sortedContests);
+      } catch (error) {
+        console.error("Error fetching contests:", error);
+      } finally {
+        setIsContestsLoading(false);
+      }
     };
 
     fetchContests();
   }, []);
+
+  // useEffect for whenver the contest filter changes
+  useEffect(() => {
+    let result = [...contests];
+
+    if (platformFilter !== "All") {
+      result = result.filter((contest) => contest.platform === platformFilter);
+    }
+    setFilteredContests(result);
+  }, [contests, platformFilter]);
 
   return (
     <div className="min-h-screen bg-gray-950 py-16 px-4 sm:px-6 lg:px-8">
@@ -464,134 +519,165 @@ const TabsContainer = () => {
           )}
 
           {activeTab === "contests" && (
-            <motion.div
-              key="contests"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {contests.map((contest, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: idx * 0.1 }}
-                    className="relative overflow-hidden rounded-xl bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 p-6 hover:border-blue-500/50 transition-all duration-300"
+            <div className="flex flex-col">
+              <div className="flex space-x-2 overflow-x-auto pb-2 sm:pb-0 mb-7">
+                {[
+                  "All",
+                  "LeetCode",
+                  "GeeksforGeeks",
+                  "Codeforces",
+                  "CodeChef",
+                  "HackerRank",
+                ].map((filter) => (
+                  <button
+                    onClick={() => setPlatformFilter(filter)}
+                    key={filter}
+                    className={`px-3 py-2 rounded-lg text-sm whitespace-nowrap ${
+                      platformFilter === filter
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-800/50 text-gray-300 hover:bg-gray-700/50"
+                    }`}
                   >
-                    <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-blue-500/10 blur-xl"></div>
-
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <div className="inline-block px-2.5 py-0.5 text-xs rounded-full bg-gray-700/70 text-gray-300 border border-gray-600/50 mb-2">
-                          {contest.platform}
-                        </div>
-                        <h3 className="text-xl font-semibold text-white mb-3">
-                          {contest.name}
-                        </h3>
-
-                        <div className="space-y-2">
-                          <div className="flex items-center">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 text-cyan-400 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
-                            <span className="text-gray-300 text-sm">
-                              {contest.date}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 text-cyan-400 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                            <span className="text-gray-300 text-sm">
-                              {contest.duration}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4 text-cyan-400 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M13 10V3L4 14h7v7l9-11h-7z"
-                              />
-                            </svg>
-                            <span className="text-gray-300 text-sm">
-                              {contest.difficulty}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="p-2 rounded-lg bg-blue-500/20 border border-blue-500/30 text-blue-400"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                          />
-                        </svg>
-                      </motion.button>
-                    </div>
-
-                    <div className="mt-6">
-                      <motion.a
-                        href={contest.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full py-2 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-medium text-sm flex items-center justify-center"
-                      >
-                        Register Now
-                      </motion.a>
-                    </div>
-                  </motion.div>
+                    {filter}
+                  </button>
                 ))}
               </div>
-            </motion.div>
+
+              <motion.div
+                key="contests"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                {isContestsLoading ? (
+                  <div className="flex flex-col items-center justify-center py-20">
+                    <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                    <p className="text-gray-400 font-medium">
+                      Loading contests...
+                    </p>
+                  </div>
+                ) : filteredContests.length === 0 ? (
+                  <div className="text-center py-8">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-12 w-12 mx-auto text-gray-500 mb-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <p className="text-gray-500">
+                      No active contests for the specific platform
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {filteredContests.map((contest, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: idx * 0.1 }}
+                        className="relative overflow-hidden rounded-xl bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 p-6 hover:border-blue-500/50 transition-all duration-300"
+                      >
+                        <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-blue-500/10 blur-xl"></div>
+
+                        <div>
+                          <div className="inline-block px-2.5 py-0.5 text-xs rounded-full bg-gray-700/70 text-gray-300 border border-gray-600/50 mb-2">
+                            {contest.platform}
+                          </div>
+                          <h3 className="text-xl font-semibold text-white mb-3">
+                            {contest.name}
+                          </h3>
+
+                          <div className="space-y-2">
+                            <div className="flex items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 text-cyan-400 mr-2"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                />
+                              </svg>
+                              <span className="text-gray-300 text-sm">
+                                {contest.date}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 text-cyan-400 mr-2"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              <span className="text-gray-300 text-sm">
+                                {contest.duration}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4 text-cyan-400 mr-2"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                                />
+                              </svg>
+                              <span className="text-gray-300 text-sm">
+                                {contest.difficulty}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-6">
+                          <motion.a
+                            href={contest.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full py-2 rounded-lg bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-medium text-sm flex items-center justify-center"
+                          >
+                            Register Now
+                          </motion.a>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+              </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </div>

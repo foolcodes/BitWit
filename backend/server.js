@@ -81,7 +81,6 @@ app.get("/api/gfg-contest", async (req, res) => {
 
     res.json(response.data);
   } catch (error) {
-    console.error("Error fetching GFG contests:", error);
     res.status(400).json({ error: "Error fetching GFG contests" });
   }
 });
@@ -129,7 +128,6 @@ app.get("/api/leetcode-contest", async (req, res) => {
       }));
     res.json(activeContests);
   } catch (error) {
-    console.error("Error fetching LeetCode contests:", error.message);
     res.status(400).json(error || "Error while fetching leetcode contests");
   }
 });
@@ -218,6 +216,28 @@ app.get("/api/gfg-potd", async (req, res) => {
     const response = await axios.get(
       "https://practiceapi.geeksforgeeks.org/api/vr/problems-of-day/problem/today/"
     );
+    res.json(response.data);
+  } catch (error) {
+    res.status(400).json(error);
+  }
+});
+
+app.get("/api/hackerrank-contest", async (req, res) => {
+  try {
+    const response = await axios.get(
+      "https://www.hackerrank.com/community/engage/events",
+      {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+          Accept: "application/json",
+          "Accept-Language": "en-US,en;q=0.8",
+          "Content-Type": "application/json",
+          Referer: "https://www.hackerrank.com/contests",
+        },
+      }
+    );
+
     res.json(response.data);
   } catch (error) {
     res.status(400).json(error);

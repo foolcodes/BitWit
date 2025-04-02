@@ -8,36 +8,28 @@ import {
   Calendar,
   Code,
   Award,
-  Bookmark,
   TrendingUp,
-  Clock,
   PieChart,
   Users,
   ChevronRight,
   Trophy,
   Building,
   Zap,
-  Bell,
-  ExternalLink,
-  Play,
   Navigation,
+  ExternalLinkIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
+import { gfgContest } from "./stores/gfgProblemsList";
+import { leetcodeContests } from "./stores/contestList";
 
 const Home = () => {
   const threeJsRef = useRef(null);
-  const statsRef = useRef(null);
-  const featuresRef = useRef(null);
-  const contestsRef = useRef(null);
-  const problemsRef = useRef(null);
-  const ctaRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("upcoming");
-
+  const [upcomingContests, setUpcomingContests] = useState([]);
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
@@ -52,71 +44,35 @@ const Home = () => {
     },
   });
 
-  const upcomingContests = [
-    {
-      id: 1,
-      name: "Codeforces Round #802",
-      platform: "Codeforces",
-      date: "Mar 23, 2025",
-      time: "19:30 UTC",
-      duration: "2.5 hours",
-      participants: 12500,
-    },
-    {
-      id: 2,
-      name: "LeetCode Weekly Contest 337",
-      platform: "LeetCode",
-      date: "Mar 24, 2025",
-      time: "02:30 UTC",
-      duration: "1.5 hours",
-      participants: 8750,
-    },
-    {
-      id: 3,
-      name: "CodeChef Starters 80",
-      platform: "CodeChef",
-      date: "Mar 25, 2025",
-      time: "14:30 UTC",
-      duration: "3 hours",
-      participants: 5230,
-    },
-    {
-      id: 4,
-      name: "AtCoder Beginner Contest 293",
-      platform: "AtCoder",
-      date: "Mar 26, 2025",
-      time: "12:00 UTC",
-      duration: "2 hours",
-      participants: 4800,
-    },
-  ];
-
-  const pastContests = [
-    {
-      id: 1,
-      name: "Codeforces Round #801",
-      platform: "Codeforces",
-      date: "Mar 19, 2025",
-      participants: 14320,
-      winner: "tourist",
-    },
-    {
-      id: 2,
-      name: "LeetCode Weekly Contest 336",
-      platform: "LeetCode",
-      date: "Mar 17, 2025",
-      participants: 9105,
-      winner: "lee215",
-    },
-    {
-      id: 3,
-      name: "HackerRank CodeSprint",
-      platform: "HackerRank",
-      date: "Mar 15, 2025",
-      participants: 6450,
-      winner: "blazingcode",
-    },
-  ];
+  // const upcomingContests = [
+  //   {
+  //     id: 1,
+  //     name: "Codeforces Round #802",
+  //     platform: "Codeforces",
+  //     date: "Mar 23, 2025",
+  //     time: "19:30 UTC",
+  //     duration: "2.5 hours",
+  //     participants: 12500,
+  //   },
+  //   {
+  //     id: 2,
+  //     name: "LeetCode Weekly Contest",
+  //     platform: "LeetCode",
+  //     date: "Mar 24, 2025",
+  //     time: "02:30 UTC",
+  //     duration: "1.5 hours",
+  //     participants: 8750,
+  //   },
+  //   {
+  //     id: 3,
+  //     name: "CodeChef Starters 80",
+  //     platform: "CodeChef",
+  //     date: "Mar 25, 2025",
+  //     time: "14:30 UTC",
+  //     duration: "3 hours",
+  //     participants: 5230,
+  //   },
+  // ];
 
   const featuredProblems = [
     {
@@ -203,6 +159,7 @@ const Home = () => {
 
   const navigate = useNavigate();
 
+  //three js useEffect
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800);
 
@@ -281,6 +238,45 @@ const Home = () => {
     };
 
     animate();
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const fetchContests = async () => {
+      const gfgContestList = await gfgContest();
+      const leetcodeContestList = await leetcodeContests();
+      const firstGfgContest = gfgContestList.data.results.upcoming[0];
+      const firstLeetcodeContest = leetcodeContestList.data[0];
+      const leetcodeStartDate = new Date(firstLeetcodeContest.startTime);
+
+      const formattedGfgContest = {
+        id: 1,
+        name: firstGfgContest.name,
+        platform: "GeeksforGeeks",
+        date: firstGfgContest.date,
+        rawDate: new Date(firstGfgContest.date),
+        difficulty: "Mixed",
+        link:
+          "https://practice.geeksforgeeks.org/contest/" + firstGfgContest.slug,
+        participants: 2723,
+      };
+
+      const formattedLeetcodeContest = {
+        id: 2,
+        name: firstLeetcodeContest.name,
+        platform: "LeetCode",
+        date: leetcodeStartDate.toLocaleDateString("en-US", {
+          month: "short",
+          day: "2-digit",
+          year: "numeric",
+        }),
+        link: firstLeetcodeContest.url,
+        participants: 4240,
+      };
+      setUpcomingContests([formattedGfgContest, formattedLeetcodeContest]);
+      setIsLoading(false);
+    };
+    fetchContests();
   }, []);
 
   return (
@@ -367,7 +363,7 @@ const Home = () => {
           <span className="text-sm mb-2 font-light tracking-wide">
             Scroll to explore
           </span>
-          <div className="w-6 h-10 border border-gray-500 rounded-full flex justify-center p-1">
+          <div className="w-6 h-10 mb-4 border border-gray-500 rounded-full flex justify-center p-1">
             <motion.div
               className="w-1.5 h-1.5 bg-cyan-400 rounded-full"
               animate={{
@@ -385,10 +381,7 @@ const Home = () => {
       </div>
 
       {/* Stats Section */}
-      <div
-        ref={statsRef}
-        className="max-w-6xl mx-auto px-4 py-16 -mt-24 relative z-20"
-      >
+      <div className="max-w-6xl mx-auto px-4 py-16 -mt-24 relative z-20">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-8">
           {[
             {
@@ -433,7 +426,6 @@ const Home = () => {
         <LampEffect>
           <div className="relative mt-5 z-10">
             <motion.div
-              ref={featuresRef}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
@@ -536,9 +528,8 @@ const Home = () => {
           </div>
         </LampEffect>
 
-        {/* Upcoming Contests Section */}
+        {/* Demo Contests Section */}
         <motion.div
-          ref={contestsRef}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -558,163 +549,70 @@ const Home = () => {
             </p>
           </div>
 
-          <Tabs
-            defaultValue="upcoming"
-            className="mb-8"
-            onValueChange={setActiveTab}
-          >
-            <div className="flex justify-center mb-8">
-              <TabsList className="bg-background/80 border border-secondary/20 p-1">
-                <TabsTrigger
-                  value="upcoming"
-                  className="data-[state=active]:bg-accent data-[state=active]:text-background px-6 py-2"
-                >
-                  Upcoming
-                </TabsTrigger>
-                <TabsTrigger
-                  value="past"
-                  className="data-[state=active]:bg-accent data-[state=active]:text-background px-6 py-2"
-                >
-                  Past Results
-                </TabsTrigger>
-              </TabsList>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-10">
+            {isLoading
+              ? Array(4)
+                  .fill(0)
+                  .map((_, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-secondary/10 rounded-xl h-64 animate-pulse"
+                    />
+                  ))
+              : upcomingContests.map((contest, idx) => (
+                  <motion.div
+                    key={contest.id}
+                    className="contest-card"
+                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6, delay: 0.1 * idx }}
+                    whileHover={{
+                      scale: 1.03,
+                      transition: { duration: 0.2 },
+                    }}
+                  >
+                    <Card className="bg-transparent sm border-secondary/20 h-full hover:border-accent/50 transition-all duration-300">
+                      <CardContent className="p-5">
+                        <Badge
+                          className={`${platformColors[contest.platform] || "bg-secondary"} shadow-lg`}
+                          variant="secondary"
+                        >
+                          {contest.platform}
+                        </Badge>
+                        <h3 className="text-lg font-semibold mt-4 mb-3 text-text">
+                          {contest.name}
+                        </h3>
 
-            <TabsContent value="upcoming" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {isLoading
-                  ? Array(4)
-                      .fill(0)
-                      .map((_, idx) => (
-                        <div
-                          key={idx}
-                          className="bg-secondary/10 rounded-xl h-64 animate-pulse"
-                        />
-                      ))
-                  : upcomingContests.map((contest, idx) => (
-                      <motion.div
-                        key={contest.id}
-                        className="contest-card"
-                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: 0.1 * idx }}
-                        whileHover={{
-                          scale: 1.03,
-                          transition: { duration: 0.2 },
-                        }}
-                      >
-                        <Card className="bg-secondary/10 backdrop-blur-sm border-secondary/20 h-full hover:border-accent/50 transition-all duration-300">
-                          <CardContent className="p-5">
-                            <Badge
-                              className={`${platformColors[contest.platform] || "bg-secondary"} shadow-lg`}
-                              variant="secondary"
-                            >
-                              {contest.platform}
-                            </Badge>
-                            <h3 className="text-lg font-semibold mt-4 mb-3 text-text">
-                              {contest.name}
-                            </h3>
+                        <div className="flex items-center text-sm text-text/70 mb-2">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          <span>{contest.date}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-text/70 mb-4">
+                          <Users className="h-4 w-4 mr-2" />
+                          <span>
+                            {contest.participants.toLocaleString()} participants
+                          </span>
+                        </div>
+                        <Button
+                          onClick={() => window.open(contest.link)}
+                          variant="outline"
+                          size="sm"
+                          className="w-full border-primary/40 hover:bg-primary/10 text-primary"
+                        >
+                          <ExternalLinkIcon className="h-4 w-4 mr-2" />
+                          Register
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+          </div>
 
-                            <div className="flex items-center text-sm text-text/70 mb-2">
-                              <Calendar className="h-4 w-4 mr-2" />
-                              <span>{contest.date}</span>
-                            </div>
-                            <div className="flex items-center text-sm text-text/70 mb-2">
-                              <Clock className="h-4 w-4 mr-2" />
-                              <span>
-                                {contest.time} • {contest.duration}
-                              </span>
-                            </div>
-                            <div className="flex items-center text-sm text-text/70 mb-4">
-                              <Users className="h-4 w-4 mr-2" />
-                              <span>
-                                {contest.participants.toLocaleString()}{" "}
-                                participants
-                              </span>
-                            </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-full border-primary/40 hover:bg-primary/10 text-primary"
-                            >
-                              <Bell className="h-4 w-4 mr-2" />
-                              Set Reminder
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))}
-              </div>
-            </TabsContent>
-
-            <TabsContent value="past" className="mt-0">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {isLoading
-                  ? Array(3)
-                      .fill(0)
-                      .map((_, idx) => (
-                        <div
-                          key={idx}
-                          className="bg-secondary/10 rounded-xl h-56 animate-pulse"
-                        />
-                      ))
-                  : pastContests.map((contest, idx) => (
-                      <motion.div
-                        key={contest.id}
-                        className="contest-card"
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.4, delay: 0.1 * idx }}
-                        whileHover={{
-                          scale: 1.03,
-                          transition: { duration: 0.2 },
-                        }}
-                      >
-                        <Card className="bg-secondary/10 backdrop-blur-sm border-secondary/20 h-full hover:border-accent/50 transition-all duration-300">
-                          <CardContent className="p-5">
-                            <Badge
-                              className={`${platformColors[contest.platform] || "bg-secondary"} shadow-lg`}
-                              variant="secondary"
-                            >
-                              {contest.platform}
-                            </Badge>
-                            <h3 className="text-lg font-semibold mt-4 mb-3 text-text">
-                              {contest.name}
-                            </h3>
-                            <div className="flex items-center text-sm text-text/70 mb-2">
-                              <Calendar className="h-4 w-4 mr-2" />
-                              <span>{contest.date}</span>
-                            </div>
-                            <div className="flex items-center text-sm text-text/70 mb-2">
-                              <Users className="h-4 w-4 mr-2" />
-                              <span>
-                                {contest.participants.toLocaleString()}{" "}
-                                participants
-                              </span>
-                            </div>
-                            <div className="flex items-center text-sm font-medium text-accent mb-4">
-                              <Award className="h-4 w-4 mr-2" />
-                              <span>Winner: {contest.winner}</span>
-                            </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="w-full border-primary/40 hover:bg-primary/10 text-primary"
-                            >
-                              <ExternalLink className="h-4 w-4 mr-2" />
-                              View Results
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    ))}
-              </div>
-            </TabsContent>
-          </Tabs>
           <div className="flex justify-center">
             <Button
+              onClick={() => navigate("/problems-contests")}
               variant="outline"
               className="border-gray-700/50 hover:bg-gray-800/50 text-white group"
             >
