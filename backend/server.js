@@ -1,12 +1,14 @@
 import express from "express";
 import axios from "axios";
 import cors from "cors";
+import path from "path";
 
 const app = express();
+const _dirname = path.resolve();
 
 app.use(cors());
 app.use(express.json());
-
+app.use(express.static(path.join(_dirname, "/frontend/dist")));
 const PORT = 5000;
 
 app.get("/api/strivers-list/a-to-z", async (req, res) => {
@@ -244,4 +246,8 @@ app.get("/api/hackerrank-contest", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log("Server listening on port 5000"));
+app.use("*", (_, res) => {
+  res.sendFile(path.resolve(_dirname, "frontend", "dist", "index.html"));
+});
+
+app.listen(PORT);
