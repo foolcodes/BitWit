@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/gfg-contest";
+const API_URL = "https://bitwit.onrender.com/problems-contests/api";
 
 const problems = [
   {
@@ -1234,7 +1234,7 @@ export const gfgSdeSheet = () => problems;
 
 export const gfgContest = async () => {
   try {
-    const response = axios.get(API_URL);
+    const response = axios.get(`${API_URL}/gfg-contest`);
     return response || [];
   } catch (error) {
     return [];
